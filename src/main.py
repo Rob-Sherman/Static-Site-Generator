@@ -1,4 +1,5 @@
 import os
+import sys
 import shutil
 import re
 
@@ -7,15 +8,23 @@ from htmlnode import *
 from inline_markdown import *
 from block_markdown import *
 
+basepath = ""
+
+if len(sys.argv) < 2:
+    basepath = "/"
+else: 
+    basepath = sys.argv[1]
 
 path_to_static = "static/"
-path_to_public = "public/"
+path_to_public = "docs/"
 
 from_path = "content/"
 template_path = "template.html"
-dest_path = "public/"
+dest_path = "docs/"
+
 
 def main():
+	print(path_to_public)
 	check_directories(path_to_static, path_to_public)
 	copy_contents(path_to_static, path_to_public)
 	find_pages(from_path, dest_path)
@@ -83,7 +92,8 @@ def generate_page(from_path, template_path, dest_path):
 		template = f.read()
 	template = template.replace("{{ Title }}", title)
 	new_file = template.replace("{{ Content }}", html)
-	
+	new_file = new_file.replace('href="/', f'href="{basepath}')
+	new_file = new_file.replace('src="/', f'src="{basepath}')
 	try:
 		with open(dest_path, "w") as file:
 			file.write(new_file)
